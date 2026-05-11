@@ -1,0 +1,70 @@
+name: Automated Preprocessing Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'iris_raw.csv'
+      - 'preprocessing/automate_Moch-Mizan-Ghodafail.py'
+  workflow_dispatch:   # bisa trigger manual dari tab Actions
+
+jobs:
+  preprocessing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.7'
+
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install pandas numpy scikit-learn
+
+      - name: Generate Raw Data (jika iris_raw.csv belum ada)
+        run: |
+          if [ ! -f iris_raw.csv ]; then
+            python generate_raw_data.py
+          else
+            echo "iris_raw.csv sudah ada, skip generate."
+          fi
+
+      - name: Run Preprocessing Script
+        run: |
+          python preprocessing/automate_Moch-Mizan-Ghodafail.py
+
+      - name: Verify Output
+        run: |
+          echo "=== Checking output files ==="
+          ls -lh preprocessing/iris_preprocessing/
+          python -c "
+          import pandas as pd
+          train = pd.read_csv('preprocessing/iris_preprocessing/train.csv')
+          test  = pd.read_csv('preprocessing/iris_preprocessing/test.csv')
+          print(f'Train shape: {train.shape}')
+          print(f'Test shape:  {test.shape}')
+          print('Preprocessing output valid!')
+          "
+
+      - name: Upload Preprocessed Data as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iris-preprocessed-${{ github.run_number }}
+          path: preprocessing/iris_preprocessing/
+          retention-days: 30
+
+      - name: Commit Preprocessed Data to Repository
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Actions"
+          git add preprocessing/iris_preprocessing/
+          git diff --staged --quiet || git commit -m "ci: update preprocessed dataset [run #${{ github.run_number }}]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
