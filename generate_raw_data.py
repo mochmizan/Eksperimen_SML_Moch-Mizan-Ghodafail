@@ -1,26 +1,22 @@
 """
-Jalankan script ini SEKALI untuk membuat wine_raw.csv di root repo.
+Jalankan script ini SEKALI untuk membuat breast_cancer_raw.csv di root repo.
   python generate_raw_data.py
 """
 import pandas as pd
-import urllib.request
+from sklearn.datasets import load_breast_cancer
 import os
 
-URL = "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
-OUTPUT_FILE = "wine_raw.csv"
+OUTPUT_FILE = "breast_cancer_raw.csv"
 
 def generate_data():
-    print(f"Mengunduh dataset dari {URL}...")
+    print("Memuat Breast Cancer Wisconsin dataset dari scikit-learn...")
     try:
-        # Baca langsung dari URL (delimiter di dataset wine UCI adalah semicolon ';')
-        df = pd.read_csv(URL, sep=';')
+        data = load_breast_cancer()
+        df = pd.DataFrame(data.data, columns=data.feature_names)
         
-        # Buat binary target 'quality_label'
-        # Asumsi: >= 6 is 'good', < 6 is 'bad'
-        df['quality_label'] = df['quality'].apply(lambda x: 'good' if x >= 6 else 'bad')
-        
-        # Hapus kolom quality asli agar sesuai dengan klasifikasi biner
-        df.drop(columns=['quality'], inplace=True)
+        # Buat target string agar lebih informatif (malignant/benign)
+        # di sklearn, 0 = malignant, 1 = benign
+        df['target'] = pd.Series(data.target).map({0: 'malignant', 1: 'benign'})
         
         # Standarisasi nama kolom agar tidak ada spasi (ganti dengan underscore)
         df.columns = [c.replace(' ', '_') for c in df.columns]
@@ -31,7 +27,7 @@ def generate_data():
         print(df.head())
         
     except Exception as e:
-        print(f"Gagal mengunduh dataset: {e}")
+        print(f"Gagal memuat dataset: {e}")
 
 if __name__ == "__main__":
     generate_data()

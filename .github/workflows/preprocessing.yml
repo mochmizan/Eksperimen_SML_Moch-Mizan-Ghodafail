@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'wine_raw.csv'
+      - 'breast_cancer_raw.csv'
       - 'preprocessing/automate_Moch-Mizan-Ghodafail.py'
   workflow_dispatch:   # bisa trigger manual dari tab Actions
 
@@ -27,12 +27,12 @@ jobs:
           pip install --upgrade pip
           pip install pandas numpy scikit-learn
 
-      - name: Generate Raw Data (jika wine_raw.csv belum ada)
+      - name: Generate Raw Data (jika breast_cancer_raw.csv belum ada)
         run: |
-          if [ ! -f wine_raw.csv ]; then
+          if [ ! -f breast_cancer_raw.csv ]; then
             python generate_raw_data.py
           else
-            echo "wine_raw.csv sudah ada, skip generate."
+            echo "breast_cancer_raw.csv sudah ada, skip generate."
           fi
 
       - name: Run Preprocessing Script
@@ -42,11 +42,11 @@ jobs:
       - name: Verify Output
         run: |
           echo "=== Checking output files ==="
-          ls -lh preprocessing/wine_preprocessing/
+          ls -lh preprocessing/cancer_preprocessing/
           python -c "
           import pandas as pd
-          train = pd.read_csv('preprocessing/wine_preprocessing/train.csv')
-          test  = pd.read_csv('preprocessing/wine_preprocessing/test.csv')
+          train = pd.read_csv('preprocessing/cancer_preprocessing/train.csv')
+          test  = pd.read_csv('preprocessing/cancer_preprocessing/test.csv')
           print(f'Train shape: {train.shape}')
           print(f'Test shape:  {test.shape}')
           print('Preprocessing output valid!')
@@ -55,15 +55,15 @@ jobs:
       - name: Upload Preprocessed Data as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: wine-preprocessed-${{ github.run_number }}
-          path: preprocessing/wine_preprocessing/
+          name: cancer-preprocessed-${{ github.run_number }}
+          path: preprocessing/cancer_preprocessing/
           retention-days: 30
 
       - name: Commit Preprocessed Data to Repository
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Actions"
-          git add preprocessing/wine_preprocessing/
+          git add preprocessing/cancer_preprocessing/
           git diff --staged --quiet || git commit -m "ci: update preprocessed dataset [run #${{ github.run_number }}]"
           git push
         env:

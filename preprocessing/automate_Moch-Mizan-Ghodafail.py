@@ -1,13 +1,13 @@
 """
 automate_Moch-Mizan-Ghodafail.py
-Script untuk melakukan preprocessing data wine secara otomatis.
+Script untuk melakukan preprocessing data breast cancer secara otomatis.
 
 Cara menjalankan (dari dalam folder preprocessing/):
     python automate_Moch-Mizan-Ghodafail.py
 
 Output:
-    wine_preprocessing/train.csv
-    wine_preprocessing/test.csv
+    cancer_preprocessing/train.csv
+    cancer_preprocessing/test.csv
 """
 
 import pandas as pd
@@ -20,22 +20,20 @@ from sklearn.model_selection import train_test_split
 
 # ─── Path Configuration ────────────────────────────────────────────────────────
 BASE_DIR    = os.path.dirname(os.path.abspath(__file__))   # folder preprocessing/
-RAW_DATA    = os.path.join(BASE_DIR, '..', 'wine_raw.csv')
-OUTPUT_DIR  = os.path.join(BASE_DIR, 'wine_preprocessing')
+RAW_DATA    = os.path.join(BASE_DIR, '..', 'breast_cancer_raw.csv')
+OUTPUT_DIR  = os.path.join(BASE_DIR, 'cancer_preprocessing')
 FEATURE_COLS = [
-    'fixed_acidity',
-    'volatile_acidity',
-    'citric_acid',
-    'residual_sugar',
-    'chlorides',
-    'free_sulfur_dioxide',
-    'total_sulfur_dioxide',
-    'density',
-    'pH',
-    'sulphates',
-    'alcohol'
+    'mean_radius', 'mean_texture', 'mean_perimeter', 'mean_area',
+    'mean_smoothness', 'mean_compactness', 'mean_concavity',
+    'mean_concave_points', 'mean_symmetry', 'mean_fractal_dimension',
+    'radius_error', 'texture_error', 'perimeter_error', 'area_error',
+    'smoothness_error', 'compactness_error', 'concavity_error',
+    'concave_points_error', 'symmetry_error', 'fractal_dimension_error',
+    'worst_radius', 'worst_texture', 'worst_perimeter', 'worst_area',
+    'worst_smoothness', 'worst_compactness', 'worst_concavity',
+    'worst_concave_points', 'worst_symmetry', 'worst_fractal_dimension'
 ]
-TARGET_COL  = 'quality_label'
+TARGET_COL  = 'target'
 
 
 # ─── Functions ─────────────────────────────────────────────────────────────────
@@ -135,7 +133,7 @@ def save_data(
 
 def run_preprocessing():
     print("=" * 55)
-    print("  PIPELINE PREPROCESSING WINE - Moch Mizan Ghodafail")
+    print("  PIPELINE PREPROCESSING BREAST CANCER - Moch Mizan Ghodafail")
     print("=" * 55)
 
     # 1. Load
