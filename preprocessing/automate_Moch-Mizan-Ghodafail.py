@@ -1,13 +1,13 @@
 """
 automate_Moch-Mizan-Ghodafail.py
-Script untuk melakukan preprocessing data iris secara otomatis.
+Script untuk melakukan preprocessing data wine secara otomatis.
 
 Cara menjalankan (dari dalam folder preprocessing/):
     python automate_Moch-Mizan-Ghodafail.py
 
 Output:
-    iris_preprocessing/train.csv
-    iris_preprocessing/test.csv
+    wine_preprocessing/train.csv
+    wine_preprocessing/test.csv
 """
 
 import pandas as pd
@@ -20,15 +20,22 @@ from sklearn.model_selection import train_test_split
 
 # ─── Path Configuration ────────────────────────────────────────────────────────
 BASE_DIR    = os.path.dirname(os.path.abspath(__file__))   # folder preprocessing/
-RAW_DATA    = os.path.join(BASE_DIR, '..', 'iris_raw.csv')
-OUTPUT_DIR  = os.path.join(BASE_DIR, 'iris_preprocessing')
+RAW_DATA    = os.path.join(BASE_DIR, '..', 'wine_raw.csv')
+OUTPUT_DIR  = os.path.join(BASE_DIR, 'wine_preprocessing')
 FEATURE_COLS = [
-    'sepal length (cm)',
-    'sepal width (cm)',
-    'petal length (cm)',
-    'petal width (cm)',
+    'fixed_acidity',
+    'volatile_acidity',
+    'citric_acid',
+    'residual_sugar',
+    'chlorides',
+    'free_sulfur_dioxide',
+    'total_sulfur_dioxide',
+    'density',
+    'pH',
+    'sulphates',
+    'alcohol'
 ]
-TARGET_COL  = 'species'
+TARGET_COL  = 'quality_label'
 
 
 # ─── Functions ─────────────────────────────────────────────────────────────────
@@ -128,7 +135,7 @@ def save_data(
 
 def run_preprocessing():
     print("=" * 55)
-    print("  PIPELINE PREPROCESSING - Moch Mizan Ghodafail")
+    print("  PIPELINE PREPROCESSING WINE - Moch Mizan Ghodafail")
     print("=" * 55)
 
     # 1. Load
